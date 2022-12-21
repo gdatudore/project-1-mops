@@ -2,6 +2,7 @@ package org.example.hello.controller;
 
 import java.util.List;
 
+import org.example.hello.model.CartRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,21 @@ public class ClientController {
     @PostMapping
     public Client registerClient(@RequestBody Client client) {
         return clientService.createClient(client);
+    }
+
+    @PostMapping("/{clientId}/cart")
+    public Client addToCart(@PathVariable String clientId, @RequestBody CartRequestDTO cartRequest) {
+        return clientService.addToCart(clientId, cartRequest);
+    }
+
+    @DeleteMapping("/{clientId}/cart")
+    public Client removeFromCart(@PathVariable String clientId, @RequestBody CartRequestDTO cartRequest) {
+        return clientService.removeFromCart(clientId, cartRequest);
+    }
+
+    @GetMapping("/{clientId}/place-order")
+    public Client placeOrder(@PathVariable String clientId) {
+        return clientService.placeOrder(clientId);
     }
 
     @PatchMapping("/{clientId}")

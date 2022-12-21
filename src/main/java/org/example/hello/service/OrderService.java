@@ -1,54 +1,84 @@
 package org.example.hello.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.example.hello.model.Client;
+import org.example.hello.model.Meal;
 import org.example.hello.model.Order;
+import org.example.hello.repository.ClientRepository;
+import org.example.hello.repository.MealRepository;
 import org.example.hello.repository.OrderRepository;
-
-import java.util.List;
-import java.util.Optional;
+import org.example.hello.repository.RestaurantRepository;
 
 @Service
 public class OrderService {
 
     private final OrderRepository repository;
+    private final ClientRepository clientRepository;
+    private final MealRepository mealRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Autowired
-    OrderService(OrderRepository orderRepository) { this.repository = orderRepository; }
+    OrderService(OrderRepository orderRepository,
+                 ClientRepository clientRepository,
+                 MealRepository mealRepository,
+                 RestaurantRepository restaurantRepository) {
+        this.repository = orderRepository;
+        this.clientRepository = clientRepository;
+        this.mealRepository = mealRepository;
+        this.restaurantRepository = restaurantRepository;
+    }
 
     public Order getOrderById(String orderId) {
         Optional<Order> order = repository.findById(orderId);
         if (order.isPresent()) {
             return order.get();
         }
-
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found.");
     }
-
     public List<Order> getAllOrders() {
         return repository.findAll();
     }
 
     public Order createOrder(Order order) {
+        Optional<Client> optionalClient = clientRepository.findById(order.clientId);
+        if (optionalClient.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found.");
+        }
 
-        // TODO: Check if client exists
-        // TODO: Check if meals exist (also save as mealId)
+        if (order.meals.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "You can not place an order without any meals.");
+        }
+
+        order.totalPrice = 0.0f;
+        for (Map.Entry<String, Integer> item : order.meals.entrySet()) {
+            String mealId = item.getKey();
+            Integer quantity = item.getValue();
+
+            Optional<Meal> optionalMeal = mealRepository.findById(mealId);
+            if (optionalMeal.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        item.getKey() + " is not a valid meal.");
+            }
+
+            order.totalPrice += optionalMeal.get().price * quantity;
+        }
 
         return repository.save(order);
     }
-
     public Order updateOrder(String orderId, Order request) {
         Optional<Order> optionalOrder = repository.findById(orderId);
         if (optionalOrder.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found.");
         }
-
         Order order = optionalOrder.get();
         order.updateOrder(request);
-
         return repository.save(order);
     }
 
