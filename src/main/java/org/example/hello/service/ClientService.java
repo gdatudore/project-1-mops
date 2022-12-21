@@ -3,10 +3,12 @@ package org.example.hello.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.example.hello.exception.NotFoundException;
 import org.example.hello.model.Client;
 import org.example.hello.repository.ClientRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ClientService {
@@ -24,7 +26,7 @@ public class ClientService {
             return client.get();
         }
 
-        throw new NotFoundException("Client not found.");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found.");
     }
 
     public List<Client> getAllClients() {
@@ -38,7 +40,7 @@ public class ClientService {
     public Client updateClient(String clientId, Client request) {
         Optional<Client> optionalClient = repository.findById(clientId);
         if (optionalClient.isEmpty()) {
-            throw new NotFoundException("Client not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found.");
         }
 
         Client client = optionalClient.get();
