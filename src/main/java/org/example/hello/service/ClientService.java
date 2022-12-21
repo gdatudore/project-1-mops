@@ -52,7 +52,15 @@ public class ClientService {
         return repository.save(client);
     }
 
-    public void deleteClientById(String clientId) {
+    public Client deleteClientById(String clientId) {
+        Optional<Client> optionalClient = repository.findById(clientId);
+        if (optionalClient.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found.");
+        }
+
+        Client client = optionalClient.get();
+
         repository.deleteById(clientId);
+        return client;
     }
 }
