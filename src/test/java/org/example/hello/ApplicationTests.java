@@ -5,10 +5,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
-class HelloApplicationTests {
+class ApplicationTests {
 
-    @MockBean
-    InformationRepository mockRepository;
+//    @MockBean
+//    InformationRepository mockRepository;
 
     @Test
     void contextLoads() {
