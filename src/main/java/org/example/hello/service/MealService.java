@@ -3,10 +3,12 @@ package org.example.hello.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.example.hello.exception.NotFoundException;
 import org.example.hello.model.Meal;
 import org.example.hello.repository.MealRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class MealService {
@@ -24,7 +26,7 @@ public class MealService {
             return meal.get();
         }
 
-        throw new NotFoundException("Meal not found.");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Meal not found.");
     }
 
     public Meal getMealByName(String mealName) {
@@ -33,7 +35,7 @@ public class MealService {
             return meal.get();
         }
 
-        throw new NotFoundException("Meal not found.");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Meal not found.");
     }
 
     public List<Meal> getAllMeals() {
@@ -47,7 +49,7 @@ public class MealService {
     public Meal updateMeal(String mealId, Meal request) {
         Optional<Meal> optionalMeal = repository.findById(mealId);
         if (optionalMeal.isEmpty()) {
-            throw new NotFoundException("Meal not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found.");
         }
 
         Meal Meal = optionalMeal.get();
