@@ -1,10 +1,10 @@
 package org.example.hello.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.example.hello.model.Client;
 import org.example.hello.model.Order;
 import org.example.hello.service.OrderService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{orderId}")
-    public void deleteOrder(@PathVariable String orderId) {
-        orderService.deleteOrderById(orderId);
+    public Order deleteOrder(@PathVariable String orderId) {
+        return orderService.deleteOrderById(orderId);
     }
 }

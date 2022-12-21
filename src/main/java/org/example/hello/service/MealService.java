@@ -61,7 +61,15 @@ public class MealService {
         return repository.save(Meal);
     }
 
-    public void deleteMealById(String mealId) {
+    public Meal deleteMealById(String mealId) {
+        Optional<Meal> optionalMeal = repository.findById(mealId);
+        if (optionalMeal.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Meal not found.");
+        }
+
+        Meal meal = optionalMeal.get();
+
         repository.deleteById(mealId);
+        return meal;
     }
 }

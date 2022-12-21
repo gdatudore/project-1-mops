@@ -1,6 +1,7 @@
 package org.example.hello.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +46,7 @@ public class ClientController {
     }
 
     @DeleteMapping("/{clientId}")
-    public void deleteClient(@PathVariable String clientId) {
-        clientService.deleteClientById(clientId);
+    public Client deleteClient(@PathVariable String clientId) {
+        return clientService.deleteClientById(clientId);
     }
 }

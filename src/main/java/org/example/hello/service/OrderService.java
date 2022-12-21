@@ -52,7 +52,15 @@ public class OrderService {
         return repository.save(order);
     }
 
-    public void deleteOrderById(String orderId) {
+    public Order deleteOrderById(String orderId) {
+        Optional<Order> optionalOrder = repository.findById(orderId);
+        if (optionalOrder.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found.");
+        }
+
+        Order order = optionalOrder.get();
+
         repository.deleteById(orderId);
+        return order;
     }
 }
