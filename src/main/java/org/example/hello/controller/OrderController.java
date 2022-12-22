@@ -34,11 +34,6 @@ public class OrderController {
         return orderService.createOrder(order);
     }
 
-    @PatchMapping("/{orderId}")
-    public Order updateOrder(@PathVariable String orderId, @RequestBody Order order) {
-        return orderService.updateOrder(orderId, order);
-    }
-
     @DeleteMapping("/{orderId}")
     public Order deleteOrder(@PathVariable String orderId) {
         return orderService.deleteOrderById(orderId);

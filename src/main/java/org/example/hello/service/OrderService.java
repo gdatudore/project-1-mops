@@ -14,10 +14,8 @@ import org.example.hello.repository.ClientRepository;
 import org.example.hello.repository.MealRepository;
 import org.example.hello.repository.OrderRepository;
 import org.example.hello.repository.RestaurantRepository;
-
 @Service
 public class OrderService {
-
     private final OrderRepository repository;
     private final ClientRepository clientRepository;
     private final MealRepository mealRepository;
@@ -41,6 +39,7 @@ public class OrderService {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found.");
     }
+
     public List<Order> getAllOrders() {
         return repository.findAll();
     }
@@ -50,45 +49,38 @@ public class OrderService {
         if (optionalClient.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found.");
         }
-
         if (order.meals.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "You can not place an order without any meals.");
         }
-
         order.totalPrice = 0.0f;
         for (Map.Entry<String, Integer> item : order.meals.entrySet()) {
             String mealId = item.getKey();
             Integer quantity = item.getValue();
-
             Optional<Meal> optionalMeal = mealRepository.findById(mealId);
             if (optionalMeal.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                         item.getKey() + " is not a valid meal.");
             }
-
             order.totalPrice += optionalMeal.get().price * quantity;
         }
 
-        return repository.save(order);
+        repository.save(order);
+        return order;
     }
-    public Order updateOrder(String orderId, Order request) {
-        Optional<Order> optionalOrder = repository.findById(orderId);
-        if (optionalOrder.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found.");
-        }
-        Order order = optionalOrder.get();
-        order.updateOrder(request);
-        return repository.save(order);
-    }
+
+//    Orders should not be modifiable
+//    public Order updateOrder(String orderId, Order request) {
+//        Order order = this.getOrderById(orderId);
+//
+//        order.updateOrder(request);
+//
+//        repository.save(order);
+//        return order;
+//    }
 
     public Order deleteOrderById(String orderId) {
-        Optional<Order> optionalOrder = repository.findById(orderId);
-        if (optionalOrder.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found.");
-        }
-
-        Order order = optionalOrder.get();
+        Order order = this.getOrderById(orderId);
 
         repository.deleteById(orderId);
         return order;
