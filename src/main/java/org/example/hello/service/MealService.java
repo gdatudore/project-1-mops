@@ -2,6 +2,7 @@ package org.example.hello.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,6 @@ public class MealService {
         if (meal.isPresent()) {
             return meal.get();
         }
-
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Meal not found.");
     }
 
@@ -34,30 +34,27 @@ public class MealService {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Meal not found.");
     }
+
     public List<Meal> getAllMeals() {
         return repository.findAll();
     }
+
     public Meal createMeal(Meal meal) {
-        return repository.save(meal);
+        repository.save(meal);
+        return meal;
     }
+
     public Meal updateMeal(String mealId, Meal request) {
-        Optional<Meal> optionalMeal = repository.findById(mealId);
-        if (optionalMeal.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Meal not found.");
-        }
-        Meal meal = optionalMeal.get();
+        Meal meal = this.getMealById(mealId);
 
         meal.updateMeal(request);
-        return repository.save(meal);
+
+        repository.save(meal);
+        return meal;
     }
 
     public Meal deleteMealById(String mealId) {
-        Optional<Meal> optionalMeal = repository.findById(mealId);
-        if (optionalMeal.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Meal not found.");
-        }
-
-        Meal meal = optionalMeal.get();
+        Meal meal = this.getMealById(mealId);
 
         repository.deleteById(mealId);
         return meal;
